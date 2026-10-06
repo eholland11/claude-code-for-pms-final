@@ -22,8 +22,8 @@ prompt library built from your own questions.
 
 ---
 
-### 1.
+### 1. Can you describe to me in more detail what Dispatch is, what the function is, and how users use it?
 
-### 2.
+### 2. What are the complaints that are coming in since the new release and what parts of the feature where actually changed in the release itself?
 
-### 3.
+### 3. so to confirm, there are drops in the notifications being send to the responders? or there are less responders accepting the notifications?
