@@ -24,4 +24,62 @@ teaching scenario.
 
 ## Working context
 
-_You'll fill this in during Module 1._
+Source: one file, `00-rook/company/notes/handoff-from-priya.docx` (Priya, outgoing PM,
+written 21 Aug 2026; no overlap with the user). Everything below is from that note
+unless marked _inferred_. Priya's views are opinions, not verified facts.
+
+### The user
+New PM for **Rook Dispatch** at Rook Industries. Inherits a product Priya ran alone for
+14 months and says she "made calls faster than I checked them", so decisions in the
+less-examined parts of the product deserve a fresh look. She advises using the
+no-attachment advantage in the first month.
+
+### Product
+- **Dispatch** is the flagship and the product responders stick with. Flow: incident
+  comes in, available responders are ranked, the callout is offered to the top of the
+  list, the responder accepts or doesn't (the "ping").
+- Surfaces: **console** (stable) and **mobile** (stable since 4.1). **Routing** (the
+  ranking and ping logic) is where the interesting work and the risk are.
+- Headline metric: **acceptance rate**. The user needs to be able to explain it early.
+- Routing code is in `00-rook/code/dispatch-routing/` (not covered by the handoff;
+  read it before claiming how ranking works).
+- Only Dispatch is described. No other Rook products are mentioned in the source.
+
+### People (roles only; the note gives no names)
+- **Engineering manager**: runs Dispatch engineering. Candid. First stop when unsure.
+  Can usually pull numbers.
+- **Staff engineer** (she): built the who-gets-pinged logic. The only real source on how a
+  responder is ranked; there is no document.
+- **Support lead**: hears handler complaints first. Priya suggests a standing 15 min.
+- **Director of Product** (she): the user's director. Good, gives room.
+
+### Vocabulary
+- **Responder**: the person offered a callout. **Handler**: the people writing in to
+  complain about 4.2 (_inferred_: console-side users; the note never defines it).
+- **Ping / offer**: the callout sent to a responder. **Ping timeout**: how long they
+  have to respond.
+- **Acceptance rate**: share of pings taken. Exact definition not given.
+- **Recent acceptance history**: a ranking input, weighted against **proximity**.
+
+### Where things stand
+- **4.2 shipped 12 Aug 2026.** Proximity now weighs more than recent acceptance
+  history (a long-requested change, delayed three quarters, from responders working
+  wide geographies). The ping timeout was also cut in the same release.
+- **Problem:** since 4.2, fewer pings are accepted and more handlers are complaining.
+- **Confounds:** August is seasonally soft every year, and two changes shipped together
+  (ranking and timeout). Priya's read is "mostly seasonal, back in September", which is
+  untested. Today is 6 Oct 2026, so September data should now exist and can test it.
+- **Priya's steer:** check seasonality first; don't let this become a revert-4.2
+  debate, since the change was requested and reverting trades one angry group for
+  another. Treat that as her view, not a decision.
+- **Open with the Director of Product:** some items were cut from 4.2 and it's unsettled
+  which are still Q3 commitments. That conversation hasn't happened. Q3 ended 30 Sep, so
+  it is now overdue.
+- **Noise:** the 4.2 console filter-persistence change will generate cosmetic tickets.
+  Don't let it consume the first month.
+- **Gap:** nobody has written down how ranking works. Priya asks the user to write it
+  (work with the staff engineer plus the code).
+
+### Not known yet
+Names, team size, the acceptance-rate definition, actual before/after numbers, which
+items were cut from 4.2, and what Q4 commitments exist.
