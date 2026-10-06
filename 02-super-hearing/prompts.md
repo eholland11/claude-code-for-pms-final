@@ -15,7 +15,46 @@ prompt library built from your own questions.
 ---
 
 ### 1.
+Use the rook-wiki connector to find the Customer interviews database and read every interview in it. These are four conversations with the people who run the console for our responders. Tell me what they're unhappy about, group it, tell me how many of the four raised each thing, and quote one line for each so I can hear how they actually said it.
 
 ### 2.
+based on these interviews alone, is there any information that shared in the interviews that was not shared in these themes?
 
 ### 3.
+based on this information are there any trends that would indicate that the 4.2 release caused the problems they are experiencing
+
+### 4.
+Let's not look at the database yet. With all the information we have, is there anything we're missing to help us understand where and when this issues started
+
+### 5.
+Read everything in 00-rook/feedback/tickets/. Same treatment as before: group them, tell me how many are in each group, and quote one line from each.
+
+### 6.
+Use the rook-database connector to read the support_tickets table. Same treatment as before: group them, tell me how many are in each group, and quote one line from each.
+
+### 7.
+is there anything mentioned here that indicates a severe problem that should be resolved immediately
+
+### 8.
+is there anything in the tickets that wasn't mentioned in the initial breakdown that is worth considering?
+
+### 9.
+looking at ticket data, can we identify any trends over the course of the past few months
+
+### 10.
+You've now read both folders (interviews and tickets). Where do they disagree? What's loud in the interviews but rare in the tickets, and what's all over the tickets that nobody brought up in the interviews?
+
+### 11.
+is there anything else between the two that's not mentioned here that is worth considering?
+
+### 12.
+are there any voices that are skewing the feedback? i.e one responder is much louder than the others?
+
+### 13.
+does the timing of the interviews match up with the increase a support tickets submitted?
+
+### 14.
+what should our next steps be for identifying the issues that need resolved
+
+### 15.
+can you help fill in this blanks for what we thought was wrong with the 4.2 release at each stage of the review we did

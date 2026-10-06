@@ -83,3 +83,11 @@ no-attachment advantage in the first month.
 ### Not known yet
 Names, team size, the acceptance-rate definition, actual before/after numbers, which
 items were cut from 4.2, and what Q4 commitments exist.
+
+### Module 2 findings (interviews and tickets)
+- Sources: rook-wiki "Customer interviews" (4 handlers, 2-5 Sep: Dot, Ambrose, Halloran, Kip) and rook-database `support_tickets` (147 tickets, 29 Jun-7 Sep, 12 handlers). `00-rook/feedback/tickets/` is empty. 15 handlers seen in total (only Ambrose is in both); the real team size is still unknown.
+- Timing: no vanished-callout or quiet-responder tickets before 12 Aug. Vanished callouts start 12 Aug (15 tickets, 11 of 12 handlers). Quiet responders start 17 Aug (30 tickets, only 4 responders): The Undertow and Farlight had 7-9 days with no ping (about 12 a week down to 1-2), Halfmoon and Corporal Ashgrove are down about 30%. All 40 pre-release tickets are closed; 83 of 107 since are open.
+- Skew: two handlers (Okafor, Pruitt) wrote two-thirds of the quiet-responder tickets, and none of the four worst-affected handlers was interviewed. The "flooded responder" side comes only from Dot and Kip. The interviews were console-redesign research, held after the ticket peak (week of 24 Aug).
+- 4.2 is a strong candidate cause, not proven: the timeout and ranking changes shipped together, filter resets "after update" suggest later deploys, Ambrose says it was not the first time this year, and the 12 Aug deploy time is unknown. Priya's "mostly seasonal" read is still untested.
+- Outside Dispatch, route to Supply: cracked vest plates stuck on slow requisitions, a grapple line retracting slowly in the cold, and failure reports nobody answers.
+- Next: read the routing code and CHANGELOG (not yet read), ask the staff engineer about the quiet responders, get ping data (including Sep and Aug 2025), call Okafor and Pruitt, answer the open tickets, and hold the overdue Director of Product conversation.
