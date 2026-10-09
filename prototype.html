@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rook Dispatch console — quiet responder prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --ink:#1d2433; --muted:#667085; --line:#e3e7ee; --bg:#f4f6fa; --card:#fff;
+    --brand:#1f3a68; --amber:#b45309; --amber-bg:#fef3c7; --amber-line:#f5d27a;
+    --green:#0f7b4f; --green-bg:#e3f5ec; --blue:#2554c7; --blue-bg:#e8effd;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:var(--brand); color:#fff; display:flex; align-items:center; gap:24px; padding:0 24px; height:52px; }
+  header .logo { font-weight:700; letter-spacing:.3px; }
+  header nav a { color:#c9d4ea; text-decoration:none; margin-right:18px; font-size:13px; }
+  header nav a.on { color:#fff; border-bottom:2px solid #fff; padding-bottom:4px; }
+  header .who { margin-left:auto; font-size:13px; color:#c9d4ea; }
+  main { max-width:980px; margin:0 auto; padding:24px; }
+  .bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-wrap:wrap; gap:12px; }
+  h1 { font-size:20px; margin:0; }
+  .sub { color:var(--muted); margin:0 0 18px; }
+  .toggle { display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#fff; }
+  .toggle button { border:0; background:#fff; padding:7px 14px; font:inherit; cursor:pointer; color:var(--muted); }
+  .toggle button.on { background:var(--brand); color:#fff; }
+  .cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:760px){ .cards{grid-template-columns:1fr;} }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+  .card.quiet { border-color:var(--amber-line); }
+  .top { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .name { font-size:16px; font-weight:650; }
+  .area { color:var(--muted); font-size:12.5px; }
+  .status { font-size:12px; padding:2px 9px; border-radius:99px; background:var(--green-bg); color:var(--green); white-space:nowrap; }
+  .stats { display:flex; gap:22px; margin:14px 0 6px; }
+  .stat b { display:block; font-size:22px; }
+  .stat span { color:var(--muted); font-size:12px; }
+  .chart { display:flex; align-items:flex-end; gap:5px; height:54px; margin:8px 0 2px; }
+  .chart i { flex:1; background:#c7d3ea; border-radius:3px 3px 0 0; min-height:2px; }
+  .chart i.after { background:var(--brand); }
+  .chart-lab { display:flex; justify-content:space-between; color:var(--muted); font-size:11px; }
+  .flag { margin-top:14px; width:100%; text-align:left; display:flex; align-items:center; gap:8px; background:var(--amber-bg); border:1px solid var(--amber-line); color:var(--amber); padding:9px 12px; border-radius:9px; font:inherit; font-weight:600; cursor:pointer; }
+  .flag:hover { background:#fde9a8; }
+  .flag .chev { margin-left:auto; transition:transform .15s; }
+  .flag[aria-expanded="true"] .chev { transform:rotate(180deg); }
+  .why { display:none; margin-top:10px; padding:12px 14px; border-radius:9px; background:#fffbf0; border:1px solid var(--amber-line); }
+  .why.open { display:block; }
+  .why p { margin:0 0 8px; }
+  .why .small { color:var(--muted); font-size:12.5px; }
+  .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .btn { border:1px solid var(--line); background:#fff; border-radius:8px; padding:7px 12px; font:inherit; cursor:pointer; }
+  .btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+  .btn:disabled { opacity:.6; cursor:default; }
+  .sent { display:none; margin-top:10px; padding:9px 12px; border-radius:9px; background:var(--green-bg); color:var(--green); }
+  .sent.on { display:block; }
+  .busy-note { margin-top:14px; padding:9px 12px; border-radius:9px; background:var(--blue-bg); color:var(--blue); font-size:13px; }
+  .none { margin-top:14px; color:var(--muted); font-size:13px; }
+  textarea { width:100%; min-height:62px; margin-top:6px; font:inherit; padding:8px; border:1px solid var(--line); border-radius:8px; }
+  footer { margin-top:22px; color:var(--muted); font-size:12px; }
+  .note { margin-top:14px; padding:10px 14px; background:#fff; border:1px dashed #b8c2d6; border-radius:10px; color:var(--muted); font-size:12.5px; }
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">ROOK DISPATCH</span>
+  <nav><a class="on" href="#" onclick="return false">Coverage</a><a href="#" onclick="return false">Callouts</a><a href="#" onclick="return false">Responders</a><a href="#" onclick="return false">Reports</a></nav>
+  <span class="who">Kip · Handler</span>
+</header>
+
+<main>
+  <div class="bar">
+    <h1>Coverage — my responders</h1>
+    <div class="toggle" role="group" aria-label="Prototype view">
+      <button id="vNow" onclick="setView('now')">Console today</button>
+      <button id="vNew" class="on" onclick="setView('new')">With this change</button>
+    </div>
+  </div>
+  <p class="sub">Pings offered per week, last 8 weeks. Illustrative data for prototype purposes.</p>
+
+  <div class="cards">
+    <!-- Quiet responder -->
+    <section class="card quiet" id="mite">
+      <div class="top">
+        <div><div class="name">Meteor Mite</div><div class="area">Eastgate</div></div>
+        <span class="status">Available</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>2</b><span>pings this week</span></div>
+        <div class="stat"><b>11</b><span>usual per week</span></div>
+        <div class="stat"><b>9 days</b><span>since last ping</span></div>
+      </div>
+      <div class="chart" data-series="11,12,10,11,11,3,2,2" data-split="5"></div>
+      <div class="chart-lab"><span>8 weeks ago</span><span>this week</span></div>
+
+      <div class="newonly">
+        <button class="flag" id="flagBtn" aria-expanded="false" aria-controls="whyBox" onclick="toggleWhy()">
+          <span>&#9888;</span><span>Quiet: 2 pings this week, usually about 11</span><span class="chev">&#9660;</span>
+        </button>
+        <div class="why" id="whyBox">
+          <p><b>Why is Meteor Mite quiet?</b></p>
+          <p>Several recent pings went unanswered, and Dispatch has been placing Meteor Mite below other nearby responders for new callouts since. Meteor Mite is still available and still qualified. Under the new ranking, missed pings no longer count as refusals, and Meteor Mite's standing returns to neutral over the next few weeks without anyone doing anything.</p>
+          <p class="small">Nothing is wrong with Meteor Mite's phone, account or availability.</p>
+          <div class="actions">
+            <button class="btn primary" id="tellBtn" onclick="openTell()">Tell Meteor Mite</button>
+            <button class="btn" onclick="toggleWhy()">Close</button>
+          </div>
+          <div id="tellBox" style="display:none">
+            <textarea id="msg">Hi — your phone isn't broken and you haven't been removed. After some missed pings, Dispatch has been offering you fewer callouts. It is being corrected and you should see offers pick up over the next few weeks.</textarea>
+            <div class="actions"><button class="btn primary" onclick="sendMsg()">Send</button><button class="btn" onclick="document.getElementById('tellBox').style.display='none'">Cancel</button></div>
+          </div>
+          <div class="sent" id="sentBox">&#10003; Sent to Meteor Mite. Logged on this card.</div>
+        </div>
+      </div>
+      <div class="oldonly none" style="display:none">No explanation is shown. All Kip sees is an empty week and a responder asking if something is broken.</div>
+    </section>
+
+    <!-- Busy responder -->
+    <section class="card" id="gale">
+      <div class="top">
+        <div><div class="name">The Gale</div><div class="area">Eastgate</div></div>
+        <span class="status">Available</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>20</b><span>pings this week</span></div>
+        <div class="stat"><b>13</b><span>usual per week</span></div>
+        <div class="stat"><b>Today</b><span>last ping</span></div>
+      </div>
+      <div class="chart" data-series="13,12,14,13,13,17,20,20" data-split="5"></div>
+      <div class="chart-lab"><span>8 weeks ago</span><span>this week</span></div>
+      <div class="newonly"><div class="busy-note">Busier than usual. Meteor Mite, in the same area, is quiet, and callouts are shifting toward The Gale. See Meteor Mite's card.</div></div>
+      <div class="oldonly none" style="display:none">Two cards from the same area tell very different stories, and nothing on screen says why.</div>
+    </section>
+  </div>
+
+  <div class="note"><b>How to try it:</b> click the amber "Quiet" bar on Meteor Mite to see the reason, then "Tell Meteor Mite" to send a message. Use the toggle at top right to switch to how the console looks today, with no flag or explanation.</div>
+  <footer>Prototype for the quiet-responder brief (9 Oct 2026). Names are from the Rook team. Numbers and wording are illustrative, not production data. The explanation text is proposed and needs engineering confirmation.</footer>
+</main>
+
+<script>
+  // Draw the 8-week bars. Bars at or after the split index are drawn in the darker "after 4.2" colour.
+  document.querySelectorAll('.chart').forEach(function (c) {
+    var s = c.dataset.series.split(',').map(Number), split = +c.dataset.split, max = Math.max.apply(null, s);
+    s.forEach(function (v, i) {
+      var b = document.createElement('i');
+      b.style.height = Math.round(v / max * 100) + '%';
+      b.title = v + ' pings';
+      if (i >= split) b.className = 'after';
+      c.appendChild(b);
+    });
+  });
+
+  function toggleWhy() {
+    var box = document.getElementById('whyBox'), btn = document.getElementById('flagBtn');
+    var open = box.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  }
+  function openTell() { document.getElementById('tellBox').style.display = 'block'; }
+  function sendMsg() {
+    document.getElementById('tellBox').style.display = 'none';
+    document.getElementById('tellBtn').disabled = true;
+    document.getElementById('tellBtn').textContent = 'Sent';
+    document.getElementById('sentBox').classList.add('on');
+  }
+  function setView(v) {
+    var isNew = v === 'new';
+    document.getElementById('vNew').className = isNew ? 'on' : '';
+    document.getElementById('vNow').className = isNew ? '' : 'on';
+    document.querySelectorAll('.newonly').forEach(function (e) { e.style.display = isNew ? '' : 'none'; });
+    document.querySelectorAll('.oldonly').forEach(function (e) { e.style.display = isNew ? 'none' : 'block'; });
+    document.getElementById('mite').classList.toggle('quiet', isNew);
+  }
+</script>
+</body>
+</html>
